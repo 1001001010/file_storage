@@ -10,6 +10,11 @@ class Texts:
     admin_menu_1 = "⛓ Resources"
     admin_menu_2 = "📩 Newsletter"
     
+    adm_edit_pos1 = "💵 Price"
+    adm_edit_pos2 = "👑 Title"
+    adm_edit_pos3 = "🖊️ Content"
+    adm_edit_pos4 = "❌ Delete"
+    
     ##################################                #####################################
     ##################################    Сообщения   #####################################
     ##################################                #####################################
@@ -31,3 +36,8 @@ class Texts:
 
     ⛓ Content: {content}
     """
+    
+    success_del = "🗑️Successfully deleted"
+    adm_ed_price = "🖊️ Enter a new price"
+    adm_ed_name = "🖊️ Enter a new name"
+    adm_ed_content = "🖊️ Enter new content"

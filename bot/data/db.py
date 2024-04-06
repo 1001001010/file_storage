@@ -84,7 +84,20 @@ class DB(AsyncClass):
         queryy, params = query_args(queryy, kwargs)
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
+    
+    # Удаление группы
+    async def del_group(self, id):
+        await self.con.execute(f"DELETE FROM groups WHERE id = ?", (id,))
+        await self.con.commit()
 
+    # Редактирование цены
+    async def edit_price(self, id, **kwargs):
+        queryy = f"UPDATE groups SET"
+        queryy, params = query(queryy, kwargs)
+        params.append(id)
+        await self.con.execute(queryy + "WHERE id = ?", params)
+        await self.con.commit()
+    
     async def get_all_languages(self):
             row = await self.con.execute("SELECT * FROM languages")
             return await row.fetchall()

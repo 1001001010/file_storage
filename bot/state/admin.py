@@ -8,3 +8,9 @@ class NewGroup(StatesGroup): #State на добавление новой гру�
     name = State()
     price = State()
     content = State()
+    
+class EditGroup(StatesGroup): #State на добавление новой группы
+    id = State()
+    name = State()
+    price = State()
+    content = State()

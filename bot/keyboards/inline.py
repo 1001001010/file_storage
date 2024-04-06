@@ -2,7 +2,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from bot.data.config import db
-from bot.data.config import lang_ru as texts
+# from bot.data.config import lang_ru as texts
 
 #Админ меню
 def admin_menu(texts):
@@ -53,3 +53,19 @@ async def choose_languages_kb():
         keyboard.add(InlineKeyboardButton(lang['name'], callback_data=f"change_language:{lang['language']}"))
 
     return keyboard
+ 
+def edit_group_inl(id, texts):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+
+   kb.append(InlineKeyboardButton(texts.adm_edit_pos1, callback_data=f"edit_price_grp:{id}"))
+   kb.append(InlineKeyboardButton(texts.adm_edit_pos2, callback_data=f"edit_name_grp:{id}"))
+   kb.append(InlineKeyboardButton(texts.adm_edit_pos3, callback_data=f"edit_desc_grp:{id}"))
+   kb.append(InlineKeyboardButton(texts.adm_edit_pos4, callback_data=f"edit_del_grp:{id}"))
+
+   keyboard.add(kb[1], kb[0])
+   keyboard.add(kb[2])
+   keyboard.add(kb[3])
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_adm_m"))
+
+   return keyboard

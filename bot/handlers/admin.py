@@ -4,11 +4,18 @@ from aiogram.types import Message, CallbackQuery
 from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.utils.utils_functions import send_admins, is_number, ded
-from bot.keyboards.inline import admin_menu, back_to_adm, group_list
+from bot.keyboards.inline import admin_menu, back_to_adm, group_list, edit_group_inl
 from bot.data.config import lang_ru, lang_en
 from bot.filters.filters import IsAdmin
-from bot.state.admin import Newsletter, NewGroup
+from bot.state.admin import Newsletter, NewGroup, EditGroup
 from bot.utils.utils_functions import get_language
+from bot.services.crypto_bot import CryptoBot
+from bot.data import config
+
+try:
+    crypto = CryptoBot(config.crypto_bot_token)
+except:
+    pass
 
 #Открытие меню
 @dp.message_handler(IsAdmin(), text=lang_ru.admin_button, state="*")
@@ -108,7 +115,82 @@ async def func_group_name(message: Message, state: FSMContext):
 async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
+    await call.message.delete()
     group_info = await db.get_group(id=group_id)
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, ded(lang.group_msg.format(id=group_info['id'], name=group_info['name'], price=group_info['price'], content=group_info['content'])))
+    await bot.send_message(call.from_user.id, ded(lang.group_msg.format(id=group_info['id'], name=group_info['name'], price=group_info['price'], content=group_info['content'])), reply_markup=edit_group_inl(id=group_id, texts=lang))
     
+#Удаление группы
+@dp.callback_query_handler(text_startswith="edit_del_grp", state="*")
+async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    await db.del_group(id=group_id) 
+    await call.message.delete()
+    await bot.send_message(call.from_user.id, lang.success_del, reply_markup=back_to_adm(texts=lang))
+
+#Изменение цены группы
+@dp.callback_query_handler(text_startswith="edit_price_grp", state="*")
+async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.adm_ed_price, reply_markup=back_to_adm(texts=lang))
+    await call.message.delete()
+    await EditGroup.price.set()
+    await state.update_data(id=group_id)
+    
+@dp.message_handler(state=EditGroup.price)
+async def func_newsletter_text(message: Message, state: FSMContext):
+    await state.update_data(price=message.text)
+    lang = await get_language(message.from_user.id)
+    if is_number(message.text):
+        data = await state.get_data()
+        await db.edit_price(id=data['id'], price=data['price'])
+        await state.finish()
+        await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))
+    else: 
+        await message.answer(lang.adm_group_no_price)
+        await message.answer(lang.adm_ed_price, reply_markup=back_to_adm(texts=lang))
+        await EditGroup.price.set()
+    
+#Изменение название группы
+@dp.callback_query_handler(text_startswith="edit_name_grp", state="*")
+async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.adm_ed_name, reply_markup=back_to_adm(texts=lang))
+    await call.message.delete()
+    await EditGroup.name.set()
+    await state.update_data(id=group_id)
+    
+@dp.message_handler(state=EditGroup.name)
+async def func_newsletter_text(message: Message, state: FSMContext):
+    await state.update_data(name=message.text)
+    data = await state.get_data()
+    lang = await get_language(message.from_user.id)
+    await db.edit_price(id=data['id'], name=data['name'])
+    await state.finish()
+    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))
+    
+#Изменение Контента группы
+@dp.callback_query_handler(text_startswith="edit_desc_grp", state="*")
+async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.adm_ed_content, reply_markup=back_to_adm(texts=lang))
+    await call.message.delete()
+    await EditGroup.content.set()
+    await state.update_data(id=group_id)
+    
+@dp.message_handler(state=EditGroup.content)
+async def func_newsletter_text(message: Message, state: FSMContext):
+    await state.update_data(content=message.text)
+    data = await state.get_data()
+    lang = await get_language(message.from_user.id)
+    await db.edit_price(id=data['id'], content=data['content'])
+    await state.finish()
+    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))

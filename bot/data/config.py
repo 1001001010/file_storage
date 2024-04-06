@@ -2,9 +2,10 @@
 import configparser
 import asyncio
 from datetime import datetime, timedelta
-from bot.data import ru, en
+from bot.data.lang import ru
 
 from bot.data.db import DB
+from bot.data.lang import en
 
 # Создание экземпляра бд 
 async def main_db():
@@ -25,3 +26,6 @@ read_config.read("settings.ini")
 
 bot_token = read_config['settings']['token'].strip().replace(" ", "")  # Токен бота
 path_database = "tgbot/data/database.db"  # Путь к Базе Данных
+
+# CryptoBot
+crypto_bot_token = read_config['settings']['crypto_bot_token'].strip().replace(" ", "")
