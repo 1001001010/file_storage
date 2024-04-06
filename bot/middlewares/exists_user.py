@@ -36,8 +36,7 @@ class ExistsUserMiddleware(BaseMiddleware):
                         if self.user_name == "":
                             us = await bot.get_chat(self.id)
                             name = us.get_mention(as_html=True)
-                        # await send_admins(f"<b>{texts.reg_user}</b>", False)
-                        await send_admins(f"<b>123</b>", False)
+                        await send_admins(f"<b>{texts.reg_user.format(name=name)}</b>", False)
                     else:
                         self.user = await db.get_user(user_id=self.id)
                         if self.user['user_name'] != self.user_name:

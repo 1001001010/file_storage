@@ -33,34 +33,34 @@ def query_args(sql, parameters: dict):
 
     return sql, list(parameters.values())
 
-# Получение пользователя из БД
-async def get_user(self, **kwargs):
-    queryy = "SELECT * FROM users"
-    queryy, params = query_args(queryy, kwargs)
-    row = await self.con.execute(queryy, params)
-    return await row.fetchone()
-
-# Регистрация пользователя в БД
-async def register_user(self, user_id, user_name, first_name):
-    await self.con.execute("INSERT INTO users("
-                            "user_id, user_name, first_name, balance)"
-                            "VALUES (?,?,?,?)",
-                            [user_id, user_name, first_name, 0])
-    await self.con.commit()
-
-# Редактирование пользователя
-async def update_user(self, id, **kwargs):
-    queryy = f"UPDATE users SET"
-    queryy, params = query(queryy, kwargs)
-    params.append(id)
-    await self.con.execute(queryy + "WHERE user_id = ?", params)
-    await self.con.commit()
-
 #Проверка и создание бд
 class DB(AsyncClass):
     async def __ainit__(self):
         self.con = await aiosqlite.connect(path_db)
         self.con.row_factory = dict_factory
+
+    # Получение пользователя из БД
+    async def get_user(self, **kwargs):
+        queryy = "SELECT * FROM users"
+        queryy, params = query_args(queryy, kwargs)
+        row = await self.con.execute(queryy, params)
+        return await row.fetchone()
+
+    # Регистрация пользователя в БД
+    async def register_user(self, user_id, user_name, first_name):
+        await self.con.execute("INSERT INTO users("
+                                "user_id, user_name, first_name, balance)"
+                                "VALUES (?,?,?,?)",
+                                [user_id, user_name, first_name, 0])
+        await self.con.commit()
+
+    # Редактирование пользователя
+    async def update_user(self, id, **kwargs):
+        queryy = f"UPDATE users SET"
+        queryy, params = query(queryy, kwargs)
+        params.append(id)
+        await self.con.execute(queryy + "WHERE user_id = ?", params)
+        await self.con.commit()
 
     #Проверка на существование бд и ее создание
     async def create_db(self):
