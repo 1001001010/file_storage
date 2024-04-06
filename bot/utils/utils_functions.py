@@ -49,3 +49,22 @@ def is_number(get_number: Union[str, int, float]) -> bool:
             return True
         except ValueError:
             return False
+        
+# Удаление отступов в многострочной строке ("""text""")
+def ded(get_text: str) -> str:
+    if get_text is not None:
+        split_text = get_text.split("\n")
+        if split_text[0] == "": split_text.pop(0)
+        if split_text[-1] == "": split_text.pop()
+        save_text = []
+
+        for text in split_text:
+            while text.startswith(" "):
+                text = text[1:].strip()
+
+            save_text.append(text)
+        get_text = "\n".join(save_text)
+    else:
+        get_text = ""
+
+    return get_text

@@ -38,7 +38,7 @@ async def group_list(page=1):
    list_kb = [
       InlineKeyboardButton("➕ Добавить группу", callback_data=f"add_group"),
       InlineKeyboardButton("🔍 Поиск", callback_data=f"search_group"),
-      InlineKeyboardButton("🔙 Главное меню", callback_data="back_to_main_menu")
+      InlineKeyboardButton("🔙 Главное меню", callback_data="back_to_adm_m")
    ]
    keyboard.add(list_kb[0], list_kb[1])
    keyboard.add(list_kb[2])

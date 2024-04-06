@@ -78,6 +78,13 @@ class DB(AsyncClass):
         await self.con.execute(f"INSERT INTO groups(name, price, content) VALUES (?, ?, ?)", (name, price, content))
         await self.con.commit()
 
+    # Получение группы из БД
+    async def get_group(self, **kwargs):
+        queryy = "SELECT * FROM groups"
+        queryy, params = query_args(queryy, kwargs)
+        row = await self.con.execute(queryy, params)
+        return await row.fetchone()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")

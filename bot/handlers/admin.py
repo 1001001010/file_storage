@@ -3,7 +3,7 @@ from aiogram.types import Message, CallbackQuery
 
 from bot.data.loader import dp, bot
 from bot.data.config import db
-from bot.utils.utils_functions import send_admins, is_number
+from bot.utils.utils_functions import send_admins, is_number, ded
 from bot.keyboards.inline import admin_menu, back_to_adm, group_list
 from bot.data.config import lang_ru as texts
 from bot.filters.filters import IsAdmin
@@ -92,3 +92,12 @@ async def func_group_name(message: Message, state: FSMContext):
     await db.new_group(name = data['name'], price = data['price'], content=data['content'])
     await message.answer(texts.success_save)
     await state.finish()
+    
+#Открытие группы 
+@dp.callback_query_handler(text_startswith="group", state="*")
+async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    group_info = await db.get_group(id=group_id)
+    await bot.send_message(call.from_user.id, ded(texts.group_msg.format(id=group_info['id'], name=group_info['name'], price=group_info['price'], content=group_info['content'])))
+    
