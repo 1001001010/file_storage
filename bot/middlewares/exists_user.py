@@ -6,7 +6,7 @@ from bot.utils.utils_functions import send_admins
 from bot.data.loader import bot
 from loguru import logger
 from bot.data.config import lang_ru as texts
-
+from bot.keyboards.inline import choose_languages_kb
 
 class ExistsUserMiddleware(BaseMiddleware):
 
@@ -36,6 +36,8 @@ class ExistsUserMiddleware(BaseMiddleware):
                         if self.user_name == "":
                             us = await bot.get_chat(self.id)
                             name = us.get_mention(as_html=True)
+                        await bot.send_message(chat_id=self.id, text="<b>Выберите язык / Select language</b>",
+                                                   reply_markup=await choose_languages_kb())
                         await send_admins(f"<b>{texts.reg_user.format(name=name)}</b>", False)
                     else:
                         self.user = await db.get_user(user_id=self.id)

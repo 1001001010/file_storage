@@ -85,30 +85,55 @@ class DB(AsyncClass):
         row = await self.con.execute(queryy, params)
         return await row.fetchone()
 
+    async def get_all_languages(self):
+            row = await self.con.execute("SELECT * FROM languages")
+            return await row.fetchall()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await users_info.fetchall()) == 5:
-            print("database was found (Users | 1/2)")
+        if len(await users_info.fetchall()) == 6:
+            print("database was found (Users | 1/3)")
         else:
             await self.con.execute("CREATE TABLE users ("
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                    "user_id INTEGER,"
                                    "user_name TEXT,"
                                    "first_name TEXT,"
+                                   "language TEXT,"
                                    "balance INTEGER)")
-            print("database was not found (Users | 1/2), creating...")
+            print("database was not found (Users | 1/3), creating...")
             await self.con.commit()
         
         groups_info = await self.con.execute("PRAGMA table_info(groups)")
         if len(await groups_info.fetchall()) == 4:
-            print("database was found (Groups | 2/2)")
+            print("database was found (Groups | 2/3)")
         else:
             await self.con.execute("CREATE TABLE groups ("
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                    "name TEXT,"
                                    "price INTEGER,"
                                    "content TEXT)")
-            print("database was not found (Groups | 2/2), creating...")
+            print("database was not found (Groups | 2/3), creating...")
+            await self.con.commit()
             
+        # Языки
+        langs = await self.con.execute("PRAGMA table_info(languages)")
+        if len(await langs.fetchall()) == 3:
+            print("database was found (Languages | 3/3)")
+        else:
+            await self.con.execute("CREATE TABLE languages("
+                                       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                       "language TEXT,"
+                                       "name TEXT)")
+
+            await self.con.execute("INSERT INTO languages("
+                                   "language, name) "
+                                   "VALUES (?, ?)", ['ru', '🇷🇺 Русский'])
+            await self.con.execute("INSERT INTO languages("
+                                   "language, name) "
+                                   "VALUES (?, ?)", ['en', '🇺🇸 English'])
+
+            print("database was not found (Languages | 3/3), creating...")
+
             await self.con.commit()

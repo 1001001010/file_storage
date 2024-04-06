@@ -1,7 +1,10 @@
 # - *- coding: utf- 8 - *-
 import configparser
-from bot.data.loader import bot
 from typing import Union
+
+from bot.data.loader import bot
+from bot.data.config import lang_en, lang_ru
+from bot.data.config import db
 
 # Получение админов
 def get_admins():
@@ -68,3 +71,10 @@ def ded(get_text: str) -> str:
         get_text = ""
 
     return get_text
+
+async def get_language(user_id):
+    lang = (await db.get_user(user_id=user_id))['language']
+    if lang == "ru":
+        return lang_ru
+    elif lang == "en":
+        return lang_en

@@ -2,7 +2,7 @@
 import configparser
 import asyncio
 from datetime import datetime, timedelta
-from bot.data import ru
+from bot.data import ru, en
 
 from bot.data.db import DB
 
@@ -13,6 +13,7 @@ async def main_db():
     return db
 
 lang_ru = ru.Texts()
+lang_en = en.Texts()
 
 loop = asyncio.get_event_loop()
 task = loop.create_task(main_db())

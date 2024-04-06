@@ -5,7 +5,7 @@ from bot.data.config import db
 from bot.data.config import lang_ru as texts
 
 #Админ меню
-def admin_menu():
+def admin_menu(texts):
    keyboard = InlineKeyboardMarkup()
    kb = []
    kb.append(InlineKeyboardButton(texts.admin_menu_1, callback_data="resources"))
@@ -15,7 +15,7 @@ def admin_menu():
 
    return keyboard
 
-def back_to_adm():
+def back_to_adm(texts):
    keyboard = InlineKeyboardMarkup()
    kb = []
    kb.append(InlineKeyboardButton(texts.back_adm_m, callback_data="back_to_adm_m"))
@@ -44,3 +44,12 @@ async def group_list(page=1):
    keyboard.add(list_kb[2])
 
    return keyboard
+
+async def choose_languages_kb():
+    keyboard = InlineKeyboardMarkup(row_width=2)
+    langs = await db.get_all_languages()
+
+    for lang in langs:
+        keyboard.add(InlineKeyboardButton(lang['name'], callback_data=f"change_language:{lang['language']}"))
+
+    return keyboard
