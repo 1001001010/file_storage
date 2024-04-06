@@ -1,6 +1,7 @@
 # - *- coding: utf- 8 - *-
 import configparser
 from bot.data.loader import bot
+from typing import Union
 
 # Получение админов
 def get_admins():
@@ -35,3 +36,16 @@ async def send_admins(msg, photo=None, file=None):
             await bot.send_document(chat_id=admin, document=file, caption=msg)
         else:
             await bot.send_message(chat_id=admin, text=msg)
+            
+# Проверка ввода на число
+def is_number(get_number: Union[str, int, float]) -> bool:
+    if str(get_number).isdigit():
+        return True
+    else:
+        if "," in str(get_number): get_number = str(get_number).replace(",", ".")
+
+        try:
+            float(get_number)
+            return True
+        except ValueError:
+            return False

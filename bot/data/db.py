@@ -73,6 +73,11 @@ class DB(AsyncClass):
         row = await self.con.execute("SELECT * FROM groups LIMIT 10 OFFSET ?", (offset,))
         return await row.fetchall()
 
+    # Добавление новой группы
+    async def new_group(self, name, price, content):
+        await self.con.execute(f"INSERT INTO groups(name, price, content) VALUES (?, ?, ?)", (name, price, content))
+        await self.con.commit()
+
     #Проверка на существование бд и ее создание
     async def create_db(self):
         users_info = await self.con.execute("PRAGMA table_info(users)")
