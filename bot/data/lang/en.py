@@ -14,13 +14,14 @@ class Texts:
     adm_edit_pos2 = "👑 Title"
     adm_edit_pos3 = "🖊️ Content"
     adm_edit_pos4 = "❌ Delete"
-    
+    close = "❌ Close"
     ##################################                #####################################
     ##################################    Сообщения   #####################################
     ##################################                #####################################
     
     welcome = "🖐 Welcome"
     admin = "👨‍💻 Welcome to the admin panel"
+    user = "Available resource groups"
     admin_newsletter = "Send a message for newsletter"
     reg_user = "💎 New user {name} has been registered" # {name} - username of the user
     admin_list_resources = "📋 Available resource groups: "

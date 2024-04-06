@@ -69,3 +69,23 @@ def edit_group_inl(id, texts):
    keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_adm_m"))
 
    return keyboard
+
+#Списко групп
+async def group_list_buy(texts, page=1):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+   list = await db.get_all_group(page)
+   for btn in list:
+      keyboard.add(InlineKeyboardButton(btn['name'], callback_data=f"group:{btn['id']}"))
+   if page > 1:
+      kb.append(InlineKeyboardButton("◀️ Предыдущая", callback_data=f"prev_page:{page - 1}"))
+   if len(list) == 10:
+      kb.append(InlineKeyboardButton("▶️ Следующая", callback_data=f"next_page:{page + 1}"))
+   keyboard.add(*kb)
+   list_kb = [
+      InlineKeyboardButton(texts.close, callback_data="delete")
+   ]
+   keyboard.add(list_kb[0], list_kb[1])
+   keyboard.add(list_kb[2])
+
+   return keyboard
