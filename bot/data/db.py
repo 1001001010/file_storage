@@ -39,6 +39,12 @@ class DB(AsyncClass):
         self.con = await aiosqlite.connect(path_db)
         self.con.row_factory = dict_factory
 
+    # Получение всех пользователей из БД
+    async def all_users(self):
+        row = await self.con.execute("SELECT * FROM users")
+
+        return await row.fetchall()
+
     # Получение пользователя из БД
     async def get_user(self, **kwargs):
         queryy = "SELECT * FROM users"
