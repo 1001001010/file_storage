@@ -4,16 +4,24 @@ from aiogram.types import Message, CallbackQuery
 from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.utils.utils_functions import send_admins
-from bot.keyboards.inline import admin_menu, back_to_adm
+from bot.keyboards.inline import admin_menu, back_to_adm, group_list
 from bot.data.config import lang_ru as texts
 from bot.filters.filters import IsAdmin
 from bot.state.admin import Newsletter
 
+#Открытие меню
 @dp.message_handler(IsAdmin(), text=texts.admin_button, state="*")
 async def func_admin_menu(message: Message, state: FSMContext):
     await state.finish()
     await message.answer(texts.admin, reply_markup=admin_menu())
-    
+
+@dp.callback_query_handler(IsAdmin(), text="back_to_adm_m", state="*")
+async def func_admin_menu(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    await bot.send_message(call.from_user.id, texts.admin, reply_markup=admin_menu())
+
+#Рассылка
 @dp.callback_query_handler(IsAdmin(), text="newsletter", state="*")
 async def func_newsletter(call: CallbackQuery, state: FSMContext):
     await state.finish()
@@ -44,3 +52,11 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     """
 
     await message.answer(new_msg)
+    
+#Работа с группами
+@dp.callback_query_handler(IsAdmin(), text="resources", state="*")
+async def func_group(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    await call.message.answer(texts.admin_list_resources, reply_markup=await group_list())
+    await Newsletter.msg.set()

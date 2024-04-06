@@ -42,7 +42,6 @@ class DB(AsyncClass):
     # Получение всех пользователей из БД
     async def all_users(self):
         row = await self.con.execute("SELECT * FROM users")
-
         return await row.fetchall()
 
     # Получение пользователя из БД
@@ -67,12 +66,18 @@ class DB(AsyncClass):
         params.append(id)
         await self.con.execute(queryy + "WHERE user_id = ?", params)
         await self.con.commit()
+        
+    #Список всех груп
+    async def get_all_group(self, page):
+        offset = (page - 1) * 10
+        row = await self.con.execute("SELECT * FROM groups LIMIT 10 OFFSET ?", (offset,))
+        return await row.fetchall()
 
     #Проверка на существование бд и ее создание
     async def create_db(self):
-        book_info = await self.con.execute("PRAGMA table_info(users)")
-        if len(await book_info.fetchall()) == 5:
-            print("database was found (Users | 1/1)")
+        users_info = await self.con.execute("PRAGMA table_info(users)")
+        if len(await users_info.fetchall()) == 5:
+            print("database was found (Users | 1/2)")
         else:
             await self.con.execute("CREATE TABLE users ("
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -80,5 +85,18 @@ class DB(AsyncClass):
                                    "user_name TEXT,"
                                    "first_name TEXT,"
                                    "balance INTEGER)")
-            print("database was not found (Users | 1/1), creating...")
+            print("database was not found (Users | 1/2), creating...")
+            await self.con.commit()
+        
+        groups_info = await self.con.execute("PRAGMA table_info(groups)")
+        if len(await groups_info.fetchall()) == 4:
+            print("database was found (Groups | 2/2)")
+        else:
+            await self.con.execute("CREATE TABLE groups ("
+                                   "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                                   "name TEXT,"
+                                   "price INTEGER,"
+                                   "content TEXT)")
+            print("database was not found (Groups | 2/2), creating...")
+            
             await self.con.commit()
