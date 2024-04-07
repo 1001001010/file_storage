@@ -46,3 +46,18 @@ class Texts:
                   Price: {price}
                   
                   <b>Use the menu below to purchase</b>"""
+                  
+    def refill_gen_text(self, way, amount, curr):
+        message = f"""
+    <b>⭐ Replenishment via: <code>{way}</code>
+    💰 Amount: <code>{amount}{curr}</code>
+    💎 To pay, click the button below:</b>
+    """
+
+        return(message)
+    
+    refill_link_inl = "💵 Go to cartoon"
+    refill_check_inl = "💎 Check payment"
+    
+    Choose_crypto = "<b>⚙️ Select cryptocurrency:</b>"
+    ne_oplat = "❌ Payment will not be found"

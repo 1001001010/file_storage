@@ -89,7 +89,7 @@ async def group_list_buy(texts, page=1):
 
    return keyboard
 
-def edit_group_inl(group_id, texts):
+def plategi_inl(group_id, texts):
    keyboard = InlineKeyboardMarkup()
    kb = []
 
@@ -99,3 +99,32 @@ def edit_group_inl(group_id, texts):
    keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_adm_m"))
 
    return keyboard
+
+def refill_open_inl(texts, link, invoice_id, group_id):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+
+   kb.append(InlineKeyboardButton(texts.refill_link_inl, url=link))
+   kb.append(InlineKeyboardButton(texts.refill_check_inl, callback_data=f"check_opl:{invoice_id}:{group_id}"))
+
+   keyboard.add(kb[0])
+   keyboard.add(kb[1])
+
+   return keyboard
+ 
+def choose_asset_crypto(pos_id):
+   k = InlineKeyboardMarkup()
+   kb = []
+
+   kb.append(InlineKeyboardButton("USDT", callback_data=f"refill:crypto_bot:USDT:{pos_id}"))
+   kb.append(InlineKeyboardButton("BTC", callback_data=f"refill:crypto_bot:BTC:{pos_id}"))
+   kb.append(InlineKeyboardButton("ETH", callback_data=f"refill:crypto_bot:ETH:{pos_id}"))
+   kb.append(InlineKeyboardButton("USDC", callback_data=f"refill:crypto_bot:USDC:{pos_id}"))
+   kb.append(InlineKeyboardButton("TON", callback_data=f"refill:crypto_bot:TON:{pos_id}"))
+   kb.append(InlineKeyboardButton("⬅ Вернуться", callback_data=f"back_to_adm_m"))
+
+   k.add(kb[0], kb[1], kb[2])
+   k.add(kb[3], kb[4])
+   k.add(kb[5])
+
+   return k

@@ -9,13 +9,7 @@ from bot.data.config import lang_ru, lang_en
 from bot.filters.filters import IsAdmin
 from bot.state.admin import Newsletter, NewGroup, EditGroup
 from bot.utils.utils_functions import get_language
-from bot.services.crypto_bot import CryptoBot
 from bot.data import config
-
-try:
-    crypto = CryptoBot(config.crypto_bot_token)
-except:
-    pass
 
 #Открытие меню
 @dp.message_handler(IsAdmin(), text=lang_ru.admin_button, state="*")

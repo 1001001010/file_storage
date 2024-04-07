@@ -3,6 +3,7 @@ import configparser
 import asyncio
 from datetime import datetime, timedelta
 from bot.data.lang import ru
+from AsyncPayments.cryptoBot import AsyncCryptoBot
 
 from bot.data.db import DB
 from bot.data.lang import en
@@ -28,4 +29,4 @@ bot_token = read_config['settings']['token'].strip().replace(" ", "")  # Ток�
 path_database = "tgbot/data/database.db"  # Путь к Базе Данных
 
 # CryptoBot
-crypto_bot_token = read_config['settings']['crypto_bot_token'].strip().replace(" ", "")
+cryptoBot = AsyncCryptoBot(read_config['settings']['crypto_bot_token'].strip().replace(" ", ""))
