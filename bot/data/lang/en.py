@@ -42,3 +42,7 @@ class Texts:
     adm_ed_price = "🖊️ Enter a new price"
     adm_ed_name = "🖊️ Enter a new name"
     adm_ed_content = "🖊️ Enter new content"
+    buy_text = """Name: {name}
+                  Price: {price}
+                  
+                  <b>Use the menu below to purchase</b>"""

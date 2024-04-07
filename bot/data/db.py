@@ -113,7 +113,7 @@ class DB(AsyncClass):
                                    "user_id INTEGER,"
                                    "user_name TEXT,"
                                    "first_name TEXT,"
-                                   "language TEXT,"
+                                   "language TEXT DEFAULT 'ru',"
                                    "balance INTEGER)")
             print("database was not found (Users | 1/3), creating...")
             await self.con.commit()
