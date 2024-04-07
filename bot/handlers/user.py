@@ -29,14 +29,16 @@ async def func_buy_group(call: CallbackQuery, state: FSMContext):
     await bot.send_message(call.from_user.id, ded(lang.buy_text.format(name=group_info['name'], price=group_info['price'])), reply_markup=plategi_inl(group_id=group_info['id'], texts=lang))
     
 @dp.callback_query_handler(text_startswith="Crypto_bot", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
     await state.finish()
+    await call.message.delete()
     group_id = call.data.split(":")[1]
     await bot.send_message(call.from_user.id, "Выберите валюту", reply_markup=choose_asset_crypto(pos_id=group_id))
     
 @dp.callback_query_handler(text_startswith="refill", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_vibor_crypt(call: CallbackQuery, state: FSMContext):
     await state.finish()
+    await call.message.delete()
     lang = await get_language(call.from_user.id)
     group_id = call.data.split(":")[3]
     group_info = await db.get_group(id=group_id)
@@ -48,7 +50,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await bot.send_message(call.from_user.id, lang.refill_gen_text(way="Crypto Bot", amount=amount, curr=fiat), reply_markup=refill_open_inl(texts=lang, link=pay_url, invoice_id=invoice_id, group_id=group_id))
     
 @dp.callback_query_handler(text_startswith="check_opl", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_check_opl(call: CallbackQuery, state: FSMContext):
     await state.finish()
     lang = await get_language(call.from_user.id)
     amount = call.data.split(":")[1]
@@ -63,6 +65,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
         if call.from_user.username == "":
             us = await bot.get_chat(call.from_user.id)
             name = us.get_mention(as_html=True)
-        await send_admins(f"💎 Пользователь @{name} приобрел {group_info['name']}")
+        await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
+        await call.message.delete()
     else:
         await call.answer(lang.ne_oplat)

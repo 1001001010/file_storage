@@ -83,7 +83,7 @@ async def group_list_buy(texts, page=1):
       kb.append(InlineKeyboardButton("▶️ Следующая", callback_data=f"next_page:{page + 1}"))
    keyboard.add(*kb)
    list_kb = [
-      InlineKeyboardButton(texts.close, callback_data="delete")
+      InlineKeyboardButton(texts.close, callback_data="back_to_m")
    ]
    keyboard.add(list_kb[0])
 
@@ -96,7 +96,19 @@ def plategi_inl(group_id, texts):
    kb.append(InlineKeyboardButton("Crypto Bot", callback_data=f"Crypto_bot:{group_id}"))
 
    keyboard.add(kb[0])
-   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_adm_m"))
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_m"))
+
+   return keyboard
+
+def kb_tip_newsletter(texts):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+
+   kb.append(InlineKeyboardButton(texts.only_text, callback_data=f"msg:text"))
+   kb.append(InlineKeyboardButton(texts.text_photo, callback_data=f"msg:photo"))
+
+   keyboard.add(kb[0], kb[1])
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_m"))
 
    return keyboard
 
@@ -121,7 +133,7 @@ def choose_asset_crypto(pos_id):
    kb.append(InlineKeyboardButton("ETH", callback_data=f"refill:crypto_bot:ETH:{pos_id}"))
    kb.append(InlineKeyboardButton("USDC", callback_data=f"refill:crypto_bot:USDC:{pos_id}"))
    kb.append(InlineKeyboardButton("TON", callback_data=f"refill:crypto_bot:TON:{pos_id}"))
-   kb.append(InlineKeyboardButton("⬅ Вернуться", callback_data=f"back_to_adm_m"))
+   kb.append(InlineKeyboardButton("⬅ Вернуться", callback_data=f"back_to_m"))
 
    k.add(kb[0], kb[1], kb[2])
    k.add(kb[3], kb[4])

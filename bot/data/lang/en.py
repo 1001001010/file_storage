@@ -15,6 +15,10 @@ class Texts:
     adm_edit_pos3 = "🖊️ Content"
     adm_edit_pos4 = "❌ Delete"
     close = "❌ Close"
+    only_text = "🖊️ Text"
+    text_photo = "🖼️ Text with photo"
+    admin_text_send = "🖊️ Enter your newsletter text"
+    admin_photo_send = "🖼️ Send a photo for mailing"
     ##################################                #####################################
     ##################################    Сообщения   #####################################
     ##################################                #####################################
@@ -61,3 +65,13 @@ class Texts:
     
     Choose_crypto = "<b>⚙️ Select cryptocurrency:</b>"
     ne_oplat = "❌ Payment will not be found"
+    
+    def tovar(self, name, desc):
+        msg = f"""
+<b>Your product
+Name: {name}
+
+{desc}</b>
+        """
+        
+    tip_newsletter = "Select newsletter type"

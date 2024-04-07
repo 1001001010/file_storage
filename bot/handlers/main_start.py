@@ -29,3 +29,11 @@ async def change_language_(call: CallbackQuery, state: FSMContext):
     lang_short_name = call.data.split(":")[1]
     await db.update_user(id=call.from_user.id, language=lang_short_name)
     await call.message.delete()
+    
+# Переключение языка
+@dp.callback_query_handler(text='back_to_m', state="*")
+async def change_language(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.welcome, reply_markup=await user_menu(call.from_user.id, texts=lang))

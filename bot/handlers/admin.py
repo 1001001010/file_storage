@@ -4,10 +4,10 @@ from aiogram.types import Message, CallbackQuery
 from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.utils.utils_functions import send_admins, is_number, ded
-from bot.keyboards.inline import admin_menu, back_to_adm, group_list, edit_group_inl
+from bot.keyboards.inline import admin_menu, back_to_adm, group_list, edit_group_inl, kb_tip_newsletter
 from bot.data.config import lang_ru, lang_en
 from bot.filters.filters import IsAdmin
-from bot.state.admin import Newsletter, NewGroup, EditGroup
+from bot.state.admin import Newsletter, NewGroup, EditGroup, Newsletter_photo
 from bot.utils.utils_functions import get_language
 from bot.data import config
 
@@ -27,13 +27,59 @@ async def func_admin_menu(call: CallbackQuery, state: FSMContext):
     await bot.send_message(call.from_user.id, lang.admin, reply_markup=admin_menu(texts=lang))
 
 #Рассылка
-@dp.callback_query_handler(IsAdmin(), text="newsletter", state="*")
+@dp.callback_query_handler(IsAdmin(), text_startswith="newsletter", state="*")
 async def func_newsletter(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
-    await call.message.answer(lang.admin_newsletter, reply_markup=back_to_adm(texts=lang))
-    await Newsletter.msg.set()
+    await call.message.answer(lang.tip_newsletter, reply_markup=kb_tip_newsletter(texts=lang))
+    # await call.message.answer(lang.admin_newsletter, reply_markup=back_to_adm(texts=lang))
+    # await Newsletter.msg.set()
+    
+@dp.callback_query_handler(IsAdmin(), text_startswith="msg", state="*")
+async def func_newsletter(call: CallbackQuery, state: FSMContext):
+    await call.message.delete()
+    type_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    if type_id == 'text':
+        await call.message.answer(lang.admin_newsletter, reply_markup=back_to_adm(texts=lang))
+        await Newsletter.msg.set()
+    elif type_id == 'photo':
+        await call.message.answer(lang.admin_text_send, reply_markup=back_to_adm(texts=lang))
+        await Newsletter_photo.msg.set()
+    
+@dp.message_handler(state=Newsletter_photo.msg)
+async def func_newsletter_text(message: Message, state: FSMContext):
+    await state.update_data(msg=message.text)
+    lang = await get_language(message.from_user.id)
+    await message.answer(lang.admin_photo_send, reply_markup=back_to_adm(texts=lang))
+    await Newsletter_photo.photo.set()
+    
+@dp.message_handler(IsAdmin(), content_types=['photo'], state=Newsletter_photo.photo)
+async def mail_photo_starts(message: Message, state: FSMContext):
+    photo = message.photo[-1].file_id
+    await state.update_data(photo=photo)
+    data = await state.get_data()
+    await send_admins(f"<b>❗ Администратор @{message.from_user.username} запустил рассылку!</b>")
+    users = await db.all_users()
+    yes_users, no_users = 0, 0
+    for user in users:
+        user_id = user['id']
+        try:
+            user_id = user['user_id']
+            await bot.send_photo(chat_id=user_id, photo=data['photo'] ,caption=data['msg'])
+            yes_users += 1
+        except:
+            no_users += 1
+
+    new_msg = f"""
+<b>💎 Всего пользователей: <code>{len(await db.all_users())}</code>
+✅ Отправлено: <code>{yes_users}</code>
+❌ Не отправлено (Бот заблокирован): <code>{no_users}</code></b>
+    """
+
+    await message.answer(new_msg)
+    await state.finish()
     
 @dp.message_handler(state=Newsletter.msg)
 async def func_newsletter_text(message: Message, state: FSMContext):
@@ -58,6 +104,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     """
 
     await message.answer(new_msg)
+    await state.finish()
     
 #Работа с группами
 @dp.callback_query_handler(IsAdmin(), text="resources", state="*")
