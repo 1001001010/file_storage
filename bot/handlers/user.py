@@ -10,6 +10,7 @@ from bot.utils.utils_functions import ded
 from bot.data import config
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from bot.utils.utils_functions import send_admins
+from datetime import datetime, timedelta
 
 #Открытие меню
 @dp.message_handler(text=lang_ru.user_button, state="*")
@@ -61,7 +62,15 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     # elif cheack[0].status == 'paid':
     if cheack[0].status == 'active':
         group_info = await db.get_group(id=group_id)
-        mas_i
+        group_list = list(group_info['content'])
+        values = "".join(str(group) for group in group_list)
+
+        # chat_id = 1234567890  (this line is not needed)
+        expire_date = datetime.now() + timedelta(days=1)
+        link = await bot.create_chat_invite_link(values, expire_date.timestamp(), member_limit=1)
+
+        print(link.invite_link)
+        
         # await bot.send_message(call.from_user.id, lang.tovar(name=group_info['name'], desc=group_info['content']))
         # name = call.from_user.username
         # if call.from_user.username == "":
