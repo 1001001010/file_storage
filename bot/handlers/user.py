@@ -56,16 +56,28 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     amount = call.data.split(":")[1]
     group_id = call.data.split(":")[2]
     cheack = await cryptoBot.get_invoices(invoice_ids=amount)
+    # if cheack[0].status == 'active':
+    #     await call.answer(lang.ne_oplat)
+    # elif cheack[0].status == 'paid':
     if cheack[0].status == 'active':
-        await call.answer(lang.ne_oplat)
-    elif cheack[0].status == 'paid':
         group_info = await db.get_group(id=group_id)
-        await bot.send_message(call.from_user.id, lang.tovar(name=group_info['name'], desc=group_info['content']))
-        name = call.from_user.username
-        if call.from_user.username == "":
-            us = await bot.get_chat(call.from_user.id)
-            name = us.get_mention(as_html=True)
-        await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
-        await call.message.delete()
+        mas_i
+        # await bot.send_message(call.from_user.id, lang.tovar(name=group_info['name'], desc=group_info['content']))
+        # name = call.from_user.username
+        # if call.from_user.username == "":
+        #     us = await bot.get_chat(call.from_user.id)
+        #     name = us.get_mention(as_html=True)
+        # await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
+        # await call.message.delete()
     else:
         await call.answer(lang.ne_oplat)
+        
+#ruKassa
+# @dp.callback_query_handler(text_startswith="ruKassa", state="*")
+# async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+#     await state.finish()
+#     await call.message.delete()
+#     group_id = call.data.split(":")[1]
+#     group_info = await db.get_group(id=group_id)
+#     payment = await ruKassa.create_payment(amount=group_info['price'])
+#     print(payment)

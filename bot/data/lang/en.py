@@ -39,7 +39,8 @@ class Texts:
     📝 Name: <b>{name}</b>
     💰 Price: <b>{price}₽</b>
 
-    ⛓ Content: {content}
+    ⛓ Content: 
+    {content}
     """
     
     success_del = "🗑️Successfully deleted"

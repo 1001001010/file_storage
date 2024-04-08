@@ -92,8 +92,11 @@ def plategi_inl(group_id, texts):
    kb = []
 
    kb.append(InlineKeyboardButton("Crypto Bot", callback_data=f"Crypto_bot:{group_id}"))
+   # kb.append(InlineKeyboardButton("ruKassa щас не ворк", callback_data=f"ruKassa:{group_id}"))
+   kb.append(InlineKeyboardButton("ruKassa щас не ворк", callback_data=f"123"))
 
    keyboard.add(kb[0])
+   keyboard.add(kb[1])
    keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_m"))
 
    return keyboard

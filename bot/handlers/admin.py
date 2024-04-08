@@ -146,8 +146,9 @@ async def func_group_name(message: Message, state: FSMContext):
 async def func_group_name(message: Message, state: FSMContext):
     await state.update_data(content=message.text)
     data = await state.get_data()
+    array = list(map(int, data['content'].split()))
     lang = await get_language(message.from_user.id)
-    await db.new_group(name = data['name'], price = data['price'], content=data['content'])
+    await db.new_group(name = data['name'], price = data['price'], content=str(array))
     await message.answer(lang.success_save)
     await state.finish()
     
@@ -231,7 +232,8 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
 async def func_newsletter_text(message: Message, state: FSMContext):
     await state.update_data(content=message.text)
     data = await state.get_data()
+    array = list(map(int, data['content'].split()))
     lang = await get_language(message.from_user.id)
-    await db.edit_price(id=data['id'], content=data['content'])
+    await db.edit_price(id=data['id'], content=array)
     await state.finish()
     await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))

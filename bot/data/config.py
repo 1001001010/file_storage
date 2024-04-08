@@ -33,4 +33,4 @@ path_database = "tgbot/data/database.db"  # Путь к Базе Данных
 cryptoBot = AsyncCryptoBot(read_config['settings']['crypto_bot_token'].strip().replace(" ", ""))
 
 #ruKassa
-ruKassa = AsyncRuKassa("Api-Token", 1, "Email", "Password") # 1 - ShopID
+# ruKassa = AsyncRuKassa("Api-Token", 1, "po-den05@mail.ru", "ffapxp0v") # 1 - ShopID
