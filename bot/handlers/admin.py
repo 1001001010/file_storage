@@ -10,6 +10,7 @@ from bot.filters.filters import IsAdmin
 from bot.state.admin import Newsletter, NewGroup, EditGroup, Newsletter_photo
 from bot.utils.utils_functions import get_language
 from bot.data import config
+from aiogram.types import Chat
 
 #Открытие меню
 @dp.message_handler(IsAdmin(), text=lang_ru.admin_button, state="*")
@@ -146,9 +147,12 @@ async def func_group_name(message: Message, state: FSMContext):
 async def func_group_name(message: Message, state: FSMContext):
     await state.update_data(content=message.text)
     data = await state.get_data()
-    array = list(map(int, data['content'].split()))
+    values = data['content'].split('\n')
+    my_array = []
+    for value in values:
+        my_array.append(int(value))
     lang = await get_language(message.from_user.id)
-    await db.new_group(name = data['name'], price = data['price'], content=str(array))
+    await db.new_group(name = data['name'], price = data['price'], content=str(my_array))
     await message.answer(lang.success_save)
     await state.finish()
     
@@ -232,8 +236,11 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
 async def func_newsletter_text(message: Message, state: FSMContext):
     await state.update_data(content=message.text)
     data = await state.get_data()
-    numbers_list = data['content']
+    values = data['content'].split('\n')
+    my_array = []
+    for value in values:
+        my_array.append(int(value))
     lang = await get_language(message.from_user.id)
-    await db.edit_price(id=data['id'], content=numbers_list)
+    await db.edit_price(id=data['id'], content=str(my_array))
     await state.finish()
     await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))

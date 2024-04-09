@@ -11,6 +11,7 @@ from bot.data import config
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from bot.utils.utils_functions import send_admins
 from datetime import datetime, timedelta
+import ast
 
 #Открытие меню
 @dp.message_handler(text=lang_ru.user_button, state="*")
@@ -62,22 +63,20 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     # elif cheack[0].status == 'paid':
     if cheack[0].status == 'active':
         group_info = await db.get_group(id=group_id)
-        group_list = list(group_info['content'])
-        values = "".join(str(group) for group in group_list)
-
-        # chat_id = 1234567890  (this line is not needed)
-        expire_date = datetime.now() + timedelta(days=1)
-        link = await bot.create_chat_invite_link(values, expire_date.timestamp(), member_limit=1)
-
-        print(link.invite_link)
-        
-        # await bot.send_message(call.from_user.id, lang.tovar(name=group_info['name'], desc=group_info['content']))
-        # name = call.from_user.username
-        # if call.from_user.username == "":
-        #     us = await bot.get_chat(call.from_user.id)
-        #     name = us.get_mention(as_html=True)
-        # await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
-        # await call.message.delete()
+        arr = ast.literal_eval(group_info['content'])
+        msg = """"""
+        for i in arr:
+            chat_id = i
+            expire_date = datetime.now() + timedelta(days=1)
+            link = await bot.create_chat_invite_link(chat_id, expire_date.timestamp, 1)
+            msg += f"{link.invite_link}\n"
+        await bot.send_message(call.from_user.id, lang.tovar(name=group_info['name'], desc=msg))
+        name = call.from_user.username
+        if call.from_user.username == "":
+            us = await bot.get_chat(call.from_user.id)
+            name = us.get_mention(as_html=True)
+        await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
+        await call.message.delete()
     else:
         await call.answer(lang.ne_oplat)
         

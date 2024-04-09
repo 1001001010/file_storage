@@ -69,10 +69,12 @@ class Texts:
     
     def tovar(self, name, desc):
         msg = f"""
-<b>Your product
-Name: {name}
+<b>Ваш товар: 
+Название: {name}
 
 {desc}</b>
         """
+
+        return(msg)
         
     tip_newsletter = "Select newsletter type"
