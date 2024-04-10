@@ -10,9 +10,12 @@ class Texts:
     admin_menu_1 = "⛓ Ресурсы"
     admin_menu_2 = "📩 Рассылка"
     
+    oplata = "💳 Оплатить"
+    
     adm_edit_pos1 = "💵 Цена"
     adm_edit_pos2 = "👑 Название"
     adm_edit_pos3 = "🖊️ Контент"
+    adm_edit_pos5 = "📓 Описание"
     adm_edit_pos4 = "❌ Удалить"
     close = "❌ Закрыть"
     only_text = "🖊️ Текст"
@@ -25,19 +28,22 @@ class Texts:
     
     welcome = "🖐 Добро пожаловать"
     admin = "👨‍💻 Добро пожаловать в админ панель"
-    user = "Доступные группы ресурсов"
+    user = "📃 Доступные группы ресурсов: "
     admin_newsletter = "Отправьте сообщение для рассылки"
     reg_user = "💎 Зарегистрирован новый пользователь {name}" # {name} - username пользователя 
     admin_list_resources = "📋 Доступные группы ресурсов: "
     adm_group_name = "🖊️ Укажите название группы: "
+    adm_group_descr = "📓Укажите описание группы: "
     adm_group_price = "💸 Укажите цену для группы: "
     adm_group_content = "🌟 Укажите контент для группы: <b>айди групп разделять новой строкой\nНапример:\n-543534543\n-5345234\n-85435634</b>"
     adm_group_no_price = "Нужно указать число"
     success_save = "Успешно сохранено"
+    choose_bank = "🔥 Выберите метод оплаты"
     group_msg = """
     🆔 Id: <b>{id}</b>
     📝 Название: <b>{name}</b>
     💰 Цена: <b>{price}₽</b>
+    📓 Описание: <b>{descr}</b>
     
     ⛓ Контент: 
     {content}
@@ -47,10 +53,10 @@ class Texts:
     adm_ed_price = "🖊️ Введите новую цену"
     adm_ed_name = "🖊️ Введите новое название"
     adm_ed_content = "🖊️ Введите новый контент"
-    buy_text = """Название: {name}
-                  Цена: {price}
-                  
-                  <b>Для покупки используейте меню ниже</b>"""
+    adm_ed_descr = "🖊️ Введите новое описание"
+    buy_text = """🔒 Название: {name}
+                  💵 Цена: {price} ₽
+                  📖 Описание: {descr}"""
                   
     def refill_gen_text(self, way, amount, curr):
         msg = f"""

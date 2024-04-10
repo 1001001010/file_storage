@@ -19,7 +19,7 @@ async def on_startup(dp: Dispatcher):
     print(colorama.Fore.GREEN + "Бот успешно запущен")
     print(colorama.Fore.LIGHTBLUE_EX + "Разработчик: https://t.me/lll10010010")
     print(colorama.Fore.RESET)
-
+ 
 # Выполнение функции после выключения бота
 async def on_shutdown(dp: Dispatcher):
     await dp.storage.close()

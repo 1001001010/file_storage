@@ -5,11 +5,11 @@ from bot.data.loader import dp, bot
 from bot.data.config import db, cryptoBot
 from bot.data.config import lang_ru, lang_en
 from bot.utils.utils_functions import get_language
-from bot.keyboards.inline import group_list_buy, plategi_inl, choose_asset_crypto, refill_open_inl
+from bot.keyboards.inline import group_list_buy, plategi_inl, refill_open_inl, bank_inl
 from bot.utils.utils_functions import ded
 from bot.data import config
 from AsyncPayments.cryptoBot import AsyncCryptoBot
-from bot.utils.utils_functions import send_admins
+from bot.utils.utils_functions import send_admins, format_rate
 from datetime import datetime, timedelta
 import ast
 
@@ -21,6 +21,20 @@ async def func_admin_menu(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await message.answer(lang.user, reply_markup=await group_list_buy(texts=lang))
     
+@dp.callback_query_handler(text="back_to_list", state="*")
+async def func_buy_group(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.user, reply_markup=await group_list_buy(texts=lang))
+    
+@dp.callback_query_handler(text="close_menu", state="*")
+async def func_buy_group(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, "Отменено")
+
 @dp.callback_query_handler(text_startswith="buy_group", state="*")
 async def func_buy_group(call: CallbackQuery, state: FSMContext):
     await state.finish()
@@ -28,21 +42,14 @@ async def func_buy_group(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     group_info = await db.get_group(id=group_id)
-    await bot.send_message(call.from_user.id, ded(lang.buy_text.format(name=group_info['name'], price=group_info['price'])), reply_markup=plategi_inl(group_id=group_info['id'], texts=lang))
+    await bot.send_message(call.from_user.id, ded(lang.buy_text.format(name=group_info['name'], price=format_rate(group_info['price']), descr=group_info['descr'])), reply_markup=plategi_inl(group_id=group_info['id'], texts=lang))
     
 @dp.callback_query_handler(text_startswith="Crypto_bot", state="*")
 async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
-    group_id = call.data.split(":")[1]
-    await bot.send_message(call.from_user.id, "Выберите валюту", reply_markup=choose_asset_crypto(pos_id=group_id))
-    
-@dp.callback_query_handler(text_startswith="refill", state="*")
-async def func_vibor_crypt(call: CallbackQuery, state: FSMContext):
-    await state.finish()
-    await call.message.delete()
     lang = await get_language(call.from_user.id)
-    group_id = call.data.split(":")[3]
+    group_id = call.data.split(":")[1]
     group_info = await db.get_group(id=group_id)
     cheack = await cryptoBot.create_invoice(amount=group_info['price'], currency_type="fiat", fiat="RUB", description=group_info['name'])
     pay_url = cheack.pay_url
@@ -58,10 +65,10 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     amount = call.data.split(":")[1]
     group_id = call.data.split(":")[2]
     cheack = await cryptoBot.get_invoices(invoice_ids=amount)
-    # if cheack[0].status == 'active':
-    #     await call.answer(lang.ne_oplat)
-    # elif cheack[0].status == 'paid':
     if cheack[0].status == 'active':
+        await call.answer(lang.ne_oplat)
+    elif cheack[0].status == 'paid':
+    # if cheack[0].status == 'active':
         group_info = await db.get_group(id=group_id)
         arr = ast.literal_eval(group_info['content'])
         msg = """"""
@@ -89,3 +96,13 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
 #     group_info = await db.get_group(id=group_id)
 #     payment = await ruKassa.create_payment(amount=group_info['price'])
 #     print(payment)
+
+@dp.callback_query_handler(text_startswith="oplata", state="*")
+async def func_buy_group(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    group_info = await db.get_group(id=group_id)
+    await bot.send_message(call.from_user.id, lang.choose_bank, reply_markup=bank_inl(group_id=group_info['id'], texts=lang))
+    

@@ -74,8 +74,8 @@ class DB(AsyncClass):
         return await row.fetchall()
 
     # Добавление новой группы
-    async def new_group(self, name, price, content):
-        await self.con.execute(f"INSERT INTO groups(name, price, content) VALUES (?, ?, ?)", (name, price, content))
+    async def new_group(self, name, price, content, descr):
+        await self.con.execute(f"INSERT INTO groups(name, price, content, descr) VALUES (?, ?, ?, ?)", (name, price, content, descr))
         await self.con.commit()
 
     # Получение группы из БД
@@ -119,13 +119,14 @@ class DB(AsyncClass):
             await self.con.commit()
         
         groups_info = await self.con.execute("PRAGMA table_info(groups)")
-        if len(await groups_info.fetchall()) == 4:
+        if len(await groups_info.fetchall()) == 5:
             print("database was found (Groups | 2/3)")
         else:
             await self.con.execute("CREATE TABLE groups ("
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                                    "name TEXT,"
                                    "price INTEGER,"
+                                   "descr TEXT,"
                                    "content TEXT)")
             print("database was not found (Groups | 2/3), creating...")
             await self.con.commit()

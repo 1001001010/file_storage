@@ -12,9 +12,11 @@ class NewGroup(StatesGroup): #State на добавление новой гру�
     name = State()
     price = State()
     content = State()
+    descr = State()
     
 class EditGroup(StatesGroup): #State на добавление новой группы
     id = State()
     name = State()
     price = State()
+    descr = State()
     content = State()

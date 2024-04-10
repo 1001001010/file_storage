@@ -78,3 +78,36 @@ async def get_language(user_id):
         return lang_ru
     elif lang == "en":
         return lang_en
+    
+# Преобразование числа в читаемый вид (123456789 -> 123 456 789)
+def format_rate(amount: Union[float, int], around: int = 2) -> str:
+    if "," in str(amount): amount = float(str(amount).replace(",", "."))
+    if " " in str(amount): amount = float(str(amount).replace(" ", ""))
+    amount = str(round(amount, around))
+
+    out_amount, save_remains = [], ""
+
+    if "." in amount: save_remains = amount.split(".")[1]
+    save_amount = [char for char in str(int(float(amount)))]
+
+    if len(save_amount) % 3 != 0:
+        if (len(save_amount) - 1) % 3 == 0:
+            out_amount.extend([save_amount[0]])
+            save_amount.pop(0)
+        elif (len(save_amount) - 2) % 3 == 0:
+            out_amount.extend([save_amount[0], save_amount[1]])
+            save_amount.pop(1)
+            save_amount.pop(0)
+        else:
+            print("Error 4388326")
+
+    for x, char in enumerate(save_amount):
+        if x % 3 == 0: out_amount.append(" ")
+        out_amount.append(char)
+
+    response = "".join(out_amount).strip() + "." + save_remains
+
+    if response.endswith("."):
+        response = response[:-1]
+
+    return response

@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from bot.data.loader import dp, bot
 from bot.data.config import db
 from bot.utils.utils_functions import send_admins, is_number, ded
-from bot.keyboards.inline import admin_menu, back_to_adm, group_list, edit_group_inl, kb_tip_newsletter
+from bot.keyboards.inline import admin_menu, back_to_adm, group_list, edit_group_inl, kb_tip_newsletter, back_to_profile
 from bot.data.config import lang_ru, lang_en
 from bot.filters.filters import IsAdmin
 from bot.state.admin import Newsletter, NewGroup, EditGroup, Newsletter_photo
@@ -34,8 +34,6 @@ async def func_newsletter(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     await call.message.answer(lang.tip_newsletter, reply_markup=kb_tip_newsletter(texts=lang))
-    # await call.message.answer(lang.admin_newsletter, reply_markup=back_to_adm(texts=lang))
-    # await Newsletter.msg.set()
     
 @dp.callback_query_handler(IsAdmin(), text_startswith="msg", state="*")
 async def func_newsletter(call: CallbackQuery, state: FSMContext):
@@ -114,7 +112,7 @@ async def func_group(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     lang = await get_language(call.from_user.id)
     await call.message.answer(lang.admin_list_resources, reply_markup=await group_list())
-    await Newsletter.msg.set()
+    # await Newsletter.msg.set()
 
 @dp.callback_query_handler(IsAdmin(), text="add_group", state="*")
 async def func_new_group(call: CallbackQuery, state: FSMContext):
@@ -136,12 +134,19 @@ async def func_group_name(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     if is_number(message.text):
         await state.update_data(price=message.text)
-        await message.answer(lang.adm_group_content, reply_markup=back_to_adm(texts=lang))
-        await NewGroup.content.set()
+        await message.answer(lang.adm_group_descr, reply_markup=back_to_adm(texts=lang))
+        await NewGroup.descr.set()
     else: 
         await message.answer(lang.adm_group_no_price)
         await message.answer(lang.adm_group_price, reply_markup=back_to_adm(texts=lang))
         await NewGroup.price.set()
+
+@dp.message_handler(state=NewGroup.descr)
+async def func_group_name(message: Message, state: FSMContext):
+    await state.update_data(descr=message.text)
+    lang = await get_language(message.from_user.id)
+    await message.answer(lang.adm_group_content, reply_markup=back_to_adm(texts=lang))
+    await NewGroup.content.set()
 
 @dp.message_handler(state=NewGroup.content)
 async def func_group_name(message: Message, state: FSMContext):
@@ -152,7 +157,7 @@ async def func_group_name(message: Message, state: FSMContext):
     for value in values:
         my_array.append(int(value))
     lang = await get_language(message.from_user.id)
-    await db.new_group(name = data['name'], price = data['price'], content=str(my_array))
+    await db.new_group(name = data['name'], price = data['price'], content=str(my_array), descr=data['descr'])
     await message.answer(lang.success_save)
     await state.finish()
     
@@ -164,7 +169,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await call.message.delete()
     group_info = await db.get_group(id=group_id)
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, ded(lang.group_msg.format(id=group_info['id'], name=group_info['name'], price=group_info['price'], content=group_info['content'])), reply_markup=edit_group_inl(id=group_id, texts=lang))
+    await bot.send_message(call.from_user.id, ded(lang.group_msg.format(id=group_info['id'], name=group_info['name'], price=group_info['price'], content=group_info['content'], descr=group_info['descr'])), reply_markup=edit_group_inl(id=group_id, texts=lang))
     
 #Удаление группы
 @dp.callback_query_handler(text_startswith="edit_del_grp", state="*")
@@ -182,7 +187,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, lang.adm_ed_price, reply_markup=back_to_adm(texts=lang))
+    await bot.send_message(call.from_user.id, lang.adm_ed_price, reply_markup=back_to_profile(texts=lang, id=group_id))
     await call.message.delete()
     await EditGroup.price.set()
     await state.update_data(id=group_id)
@@ -195,7 +200,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
         data = await state.get_data()
         await db.edit_price(id=data['id'], price=data['price'])
         await state.finish()
-        await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))
+        await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_profile(texts=lang, id=data['id']))
     else: 
         await message.answer(lang.adm_group_no_price)
         await message.answer(lang.adm_ed_price, reply_markup=back_to_adm(texts=lang))
@@ -207,7 +212,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, lang.adm_ed_name, reply_markup=back_to_adm(texts=lang))
+    await bot.send_message(call.from_user.id, lang.adm_ed_name, reply_markup=back_to_profile(texts=lang, id=group_id))
     await call.message.delete()
     await EditGroup.name.set()
     await state.update_data(id=group_id)
@@ -219,15 +224,15 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await db.edit_price(id=data['id'], name=data['name'])
     await state.finish()
-    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))
+    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_profile(texts=lang, id=data['id']))
     
 #Изменение Контента группы
-@dp.callback_query_handler(text_startswith="edit_desc_grp", state="*")
+@dp.callback_query_handler(text_startswith="edit_cont_grp", state="*")
 async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
-    await bot.send_message(call.from_user.id, lang.adm_ed_content, reply_markup=back_to_adm(texts=lang))
+    await bot.send_message(call.from_user.id, lang.adm_ed_content, reply_markup=back_to_profile(texts=lang, id=group_id))
     await call.message.delete()
     await EditGroup.content.set()
     await state.update_data(id=group_id)
@@ -243,4 +248,40 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     await db.edit_price(id=data['id'], content=str(my_array))
     await state.finish()
-    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_adm(texts=lang))
+    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_profile(texts=lang, id=data['id']))
+    
+#Изменение Описания группы
+@dp.callback_query_handler(text_startswith="edit_descr_grp", state="*")
+async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.adm_ed_descr, reply_markup=back_to_profile(texts=lang, id=group_id))
+    await call.message.delete()
+    await EditGroup.descr.set()
+    await state.update_data(id=group_id)
+    
+@dp.message_handler(state=EditGroup.descr)
+async def func_newsletter_text(message: Message, state: FSMContext):
+    await state.update_data(descr=message.text)
+    data = await state.get_data()
+    lang = await get_language(message.from_user.id)
+    await db.edit_price(id=data['id'], descr=data['descr'])
+    await state.finish()
+    await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_profile(texts=lang, id=data['id']))
+    
+@dp.message_handler(text='back_to_menu', state="*")
+async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.welcome)
+    
+@dp.message_handler(text_startswith='back_to_profile', state="*")
+async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    await call.message.delete()
+    group_info = await db.get_group(id=group_id)
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, ded(lang.group_msg.format(id=group_info['id'], name=group_info['name'], price=group_info['price'], content=group_info['content'], descr=group_info['descr'])), reply_markup=edit_group_inl(id=group_id, texts=lang))
+    

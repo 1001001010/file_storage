@@ -23,6 +23,24 @@ def back_to_adm(texts):
 
    return keyboard
 
+def back_to_menu(texts):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+   kb.append(InlineKeyboardButton(texts.back_adm_m, callback_data="back_to_menu"))
+   keyboard.add(kb[0])
+
+   return keyboard
+
+def back_to_profile(texts, id):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+   kb.append(InlineKeyboardButton(texts.back_adm_m, callback_data=f"group:{id}"))
+   keyboard.add(kb[0])
+
+   return keyboard
+
+
+
 #Списко групп
 async def group_list(page=1):
    keyboard = InlineKeyboardMarkup()
@@ -58,13 +76,14 @@ def edit_group_inl(id, texts):
 
    kb.append(InlineKeyboardButton(texts.adm_edit_pos1, callback_data=f"edit_price_grp:{id}"))
    kb.append(InlineKeyboardButton(texts.adm_edit_pos2, callback_data=f"edit_name_grp:{id}"))
-   kb.append(InlineKeyboardButton(texts.adm_edit_pos3, callback_data=f"edit_desc_grp:{id}"))
+   kb.append(InlineKeyboardButton(texts.adm_edit_pos3, callback_data=f"edit_cont_grp:{id}"))
+   kb.append(InlineKeyboardButton(texts.adm_edit_pos5, callback_data=f"edit_descr_grp:{id}"))
    kb.append(InlineKeyboardButton(texts.adm_edit_pos4, callback_data=f"edit_del_grp:{id}"))
 
    keyboard.add(kb[1], kb[0])
-   keyboard.add(kb[2])
-   keyboard.add(kb[3])
-   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_adm_m"))
+   keyboard.add(kb[2], kb[3])
+   keyboard.add(kb[4])
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"resources"))
 
    return keyboard
 
@@ -81,7 +100,7 @@ async def group_list_buy(texts, page=1):
       kb.append(InlineKeyboardButton("▶️ Следующая", callback_data=f"next_page:{page + 1}"))
    keyboard.add(*kb)
    list_kb = [
-      InlineKeyboardButton(texts.close, callback_data="back_to_m")
+      InlineKeyboardButton(texts.close, callback_data="close_menu")
    ]
    keyboard.add(list_kb[0])
 
@@ -91,13 +110,23 @@ def plategi_inl(group_id, texts):
    keyboard = InlineKeyboardMarkup()
    kb = []
 
-   kb.append(InlineKeyboardButton("Crypto Bot", callback_data=f"Crypto_bot:{group_id}"))
-   # kb.append(InlineKeyboardButton("ruKassa щас не ворк", callback_data=f"ruKassa:{group_id}"))
-   kb.append(InlineKeyboardButton("ruKassa щас не ворк", callback_data=f"123"))
+   kb.append(InlineKeyboardButton(texts.oplata, callback_data=f"oplata:{group_id}"))
 
    keyboard.add(kb[0])
-   keyboard.add(kb[1])
-   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_m"))
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_list"))
+
+   return keyboard
+
+def bank_inl(group_id, texts):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+
+   kb.append(InlineKeyboardButton("💎 CryptoBot", callback_data=f"Crypto_bot:{group_id}"))
+   # kb.append(InlineKeyboardButton("ruKassa щас не ворк", callback_data=f"ruKassa:{group_id}"))
+
+   keyboard.add(kb[0])
+   # keyboard.add(kb[1])
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"buy_group:{group_id}"))
 
    return keyboard
 
@@ -109,7 +138,7 @@ def kb_tip_newsletter(texts):
    kb.append(InlineKeyboardButton(texts.text_photo, callback_data=f"msg:photo"))
 
    keyboard.add(kb[0], kb[1])
-   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_m"))
+   keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"back_to_adm_m"))
 
    return keyboard
 
@@ -124,20 +153,3 @@ def refill_open_inl(texts, link, invoice_id, group_id):
    keyboard.add(kb[1])
 
    return keyboard
- 
-def choose_asset_crypto(pos_id):
-   k = InlineKeyboardMarkup()
-   kb = []
-
-   kb.append(InlineKeyboardButton("USDT", callback_data=f"refill:crypto_bot:USDT:{pos_id}"))
-   kb.append(InlineKeyboardButton("BTC", callback_data=f"refill:crypto_bot:BTC:{pos_id}"))
-   kb.append(InlineKeyboardButton("ETH", callback_data=f"refill:crypto_bot:ETH:{pos_id}"))
-   kb.append(InlineKeyboardButton("USDC", callback_data=f"refill:crypto_bot:USDC:{pos_id}"))
-   kb.append(InlineKeyboardButton("TON", callback_data=f"refill:crypto_bot:TON:{pos_id}"))
-   kb.append(InlineKeyboardButton("⬅ Вернуться", callback_data=f"back_to_m"))
-
-   k.add(kb[0], kb[1], kb[2])
-   k.add(kb[3], kb[4])
-   k.add(kb[5])
-
-   return k
