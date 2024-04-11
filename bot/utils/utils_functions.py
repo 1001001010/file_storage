@@ -1,6 +1,7 @@
 # - *- coding: utf- 8 - *-
 import configparser
 from typing import Union
+import time
 
 from bot.data.loader import bot
 from bot.data.config import lang_en, lang_ru
@@ -111,3 +112,10 @@ def format_rate(amount: Union[float, int], around: int = 2) -> str:
         response = response[:-1]
 
     return response
+
+# Получение текущего unix времени (True - время в наносекундах, False - время в секундах)
+def get_unix(full: bool = False) -> int:
+    if full:
+        return time.time_ns()
+    else:
+        return int(time.time())

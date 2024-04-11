@@ -2,11 +2,11 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from bot.data.loader import dp, bot
-from bot.data.config import db, cryptoBot
+from bot.data.config import db, cryptoBot, aaio_client
 from bot.data.config import lang_ru, lang_en
 from bot.utils.utils_functions import get_language
-from bot.keyboards.inline import group_list_buy, plategi_inl, refill_open_inl, bank_inl
-from bot.utils.utils_functions import ded
+from bot.keyboards.inline import group_list_buy, plategi_inl, refill_open_inl, bank_inl, refill_open_inl_aaio
+from bot.utils.utils_functions import ded, get_unix
 from bot.data import config
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from bot.utils.utils_functions import send_admins, format_rate
@@ -56,7 +56,7 @@ async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
     amount = cheack.amount
     fiat = cheack.fiat
     invoice_id = cheack.invoice_id
-    await bot.send_message(call.from_user.id, lang.refill_gen_text(way="Crypto Bot", amount=amount, curr=fiat), reply_markup=refill_open_inl(texts=lang, link=pay_url, invoice_id=invoice_id, group_id=group_id))
+    await bot.send_message(call.from_user.id, lang.refill_gen_text(way="CryptoBot", amount=amount, curr=fiat), reply_markup=refill_open_inl(texts=lang, link=pay_url, invoice_id=invoice_id, group_id=group_id))
     
 @dp.callback_query_handler(text_startswith="check_opl", state="*")
 async def func_check_opl(call: CallbackQuery, state: FSMContext):
@@ -87,15 +87,18 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     else:
         await call.answer(lang.ne_oplat)
         
-#ruKassa
-# @dp.callback_query_handler(text_startswith="ruKassa", state="*")
-# async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
-#     await state.finish()
-#     await call.message.delete()
-#     group_id = call.data.split(":")[1]
-#     group_info = await db.get_group(id=group_id)
-#     payment = await ruKassa.create_payment(amount=group_info['price'])
-#     print(payment)
+#aaio
+@dp.callback_query_handler(text_startswith="aaio", state="*")
+async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    group_id = call.data.split(":")[1]
+    group_info = await db.get_group(id=group_id)
+    lang = await get_language(call.from_user.id)
+    unic = get_unix()
+    print(unic)
+    payment = await aaio_client.create_payment_url(amount=group_info['price'], order_id=unic, desc=group_info['name'])
+    await bot.send_message(call.from_user.id, lang.refill_gen_text(way="aaio", amount=group_info['price'], curr='RUB'), reply_markup=refill_open_inl_aaio(texts=lang, link=payment, group_id=group_id, pay_id=unic))
 
 @dp.callback_query_handler(text_startswith="oplata", state="*")
 async def func_buy_group(call: CallbackQuery, state: FSMContext):
@@ -106,3 +109,17 @@ async def func_buy_group(call: CallbackQuery, state: FSMContext):
     group_info = await db.get_group(id=group_id)
     await bot.send_message(call.from_user.id, lang.choose_bank, reply_markup=bank_inl(group_id=group_info['id'], texts=lang))
     
+@dp.callback_query_handler(text_startswith="check_aaio_opl", state="*")
+async def func_check_opl(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    unic_id = call.data.split(":")[1]
+    tovar_id = call.data.split(":")[2]
+    order_info = await aaio_client.get_order_info(order_id=unic_id)
+    print(order_info)
+    # if order_info.status == 'success':
+    #     print("Payment is successful.")
+    # elif order_info.status == 'pending':
+    #     print("Payment is pending.")
+    # else:
+    #     print("Payment is unsuccessful.")

@@ -4,7 +4,7 @@ import asyncio
 from datetime import datetime, timedelta
 from bot.data.lang import ru
 from AsyncPayments.cryptoBot import AsyncCryptoBot
-from AsyncPayments.ruKassa import AsyncRuKassa
+from AsyncPayments.aaio import AsyncAaio
 
 from bot.data.db import DB
 from bot.data.lang import en
@@ -32,5 +32,5 @@ path_database = "tgbot/data/database.db"  # Путь к Базе Данных
 # CryptoBot
 cryptoBot = AsyncCryptoBot(read_config['settings']['crypto_bot_token'].strip().replace(" ", ""))
 
-#ruKassa
-# ruKassa = AsyncRuKassa("Api-Token", 1, "po-den05@mail.ru", "ffapxp0v") # 1 - ShopID
+# aaio
+aaio_client = AsyncAaio(apikey='OGFlMjQzNmEtMjgxZi00NmUzLThlNzgtNmJkMTAwMzI4OGM4OkJaMTBOUGFDdyUwbmR5RUlrOVFkKWZKYkhVUSRsNTEx', shopid='919cbf63-a3d7-47ba-98f3-e040e612a3e2', secretkey='23fd87ccb9e933804c22c7c4d3ed8240')

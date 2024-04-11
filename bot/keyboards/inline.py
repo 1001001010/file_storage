@@ -121,11 +121,11 @@ def bank_inl(group_id, texts):
    keyboard = InlineKeyboardMarkup()
    kb = []
 
+   kb.append(InlineKeyboardButton("💳 Карта (РФ, УК, КЗ)", callback_data=f"aaio:{group_id}"))
    kb.append(InlineKeyboardButton("💎 CryptoBot", callback_data=f"Crypto_bot:{group_id}"))
-   # kb.append(InlineKeyboardButton("ruKassa щас не ворк", callback_data=f"ruKassa:{group_id}"))
 
    keyboard.add(kb[0])
-   # keyboard.add(kb[1])
+   keyboard.add(kb[1])
    keyboard.add(InlineKeyboardButton(texts.back_adm_m, callback_data=f"buy_group:{group_id}"))
 
    return keyboard
@@ -148,6 +148,18 @@ def refill_open_inl(texts, link, invoice_id, group_id):
 
    kb.append(InlineKeyboardButton(texts.refill_link_inl, url=link))
    kb.append(InlineKeyboardButton(texts.refill_check_inl, callback_data=f"check_opl:{invoice_id}:{group_id}"))
+
+   keyboard.add(kb[0])
+   keyboard.add(kb[1])
+
+   return keyboard
+
+def refill_open_inl_aaio(texts, link, group_id, pay_id):
+   keyboard = InlineKeyboardMarkup()
+   kb = []
+
+   kb.append(InlineKeyboardButton(texts.refill_link_inl, url=link))
+   kb.append(InlineKeyboardButton(texts.refill_check_inl, callback_data=f"check_aaio_opl:{pay_id}:{group_id}"))
 
    keyboard.add(kb[0])
    keyboard.add(kb[1])
