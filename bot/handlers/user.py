@@ -12,6 +12,16 @@ from AsyncPayments.cryptoBot import AsyncCryptoBot
 from bot.utils.utils_functions import send_admins, format_rate
 from datetime import datetime, timedelta
 import ast
+from bot.utils.aaio import Aaio
+
+try:
+    aaio = Aaio(
+        aaio_api_key=config.aaio_api_key,
+        aaio_id_shop=config.aaio_id_shop,
+        aaio_secret_key=config.aaio_secret_key_1
+    )
+except:
+    pass
 
 #Открытие меню
 @dp.message_handler(text=lang_ru.user_button, state="*")
@@ -87,6 +97,15 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     else:
         await call.answer(lang.ne_oplat)
         
+@dp.callback_query_handler(text_startswith="oplata", state="*")
+async def func_buy_group(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    group_id = call.data.split(":")[1]
+    await call.message.delete()
+    lang = await get_language(call.from_user.id)
+    group_info = await db.get_group(id=group_id)
+    await bot.send_message(call.from_user.id, lang.choose_bank, reply_markup=bank_inl(group_id=group_info['id'], texts=lang))
+    
 #aaio
 @dp.callback_query_handler(text_startswith="aaio", state="*")
 async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
@@ -99,15 +118,6 @@ async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
     print(unic)
     payment = await aaio_client.create_payment_url(amount=group_info['price'], order_id=unic, desc=group_info['name'])
     await bot.send_message(call.from_user.id, lang.refill_gen_text(way="aaio", amount=group_info['price'], curr='RUB'), reply_markup=refill_open_inl_aaio(texts=lang, link=payment, group_id=group_id, pay_id=unic))
-
-@dp.callback_query_handler(text_startswith="oplata", state="*")
-async def func_buy_group(call: CallbackQuery, state: FSMContext):
-    await state.finish()
-    group_id = call.data.split(":")[1]
-    await call.message.delete()
-    lang = await get_language(call.from_user.id)
-    group_info = await db.get_group(id=group_id)
-    await bot.send_message(call.from_user.id, lang.choose_bank, reply_markup=bank_inl(group_id=group_info['id'], texts=lang))
     
 @dp.callback_query_handler(text_startswith="check_aaio_opl", state="*")
 async def func_check_opl(call: CallbackQuery, state: FSMContext):
@@ -115,8 +125,8 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
     lang = await get_language(call.from_user.id)
     unic_id = call.data.split(":")[1]
     tovar_id = call.data.split(":")[2]
-    order_info = await aaio_client.get_order_info(order_id=unic_id)
-    print(order_info)
+    status = await aaio.check_payment(order_id=unic_id)
+    print(status)
     # if order_info.status == 'success':
     #     print("Payment is successful.")
     # elif order_info.status == 'pending':
