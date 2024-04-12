@@ -32,9 +32,12 @@ path_database = "tgbot/data/database.db"  # Путь к Базе Данных
 # CryptoBot
 cryptoBot = AsyncCryptoBot(read_config['settings']['crypto_bot_token'].strip().replace(" ", ""))
 
-# aaio
 # Aaio
 aaio_api_key = read_config['settings']['aaio_api_key'].strip().replace(" ", "") # api ключ
 aaio_id_shop = read_config['settings']['aaio_id_shop'].strip().replace(" ", "") # id магазина
 aaio_secret_key_1 = read_config['settings']['aaio_secret_key'].strip().replace(" ", "") # первый секретный ключ
 aaio_client = AsyncAaio(apikey=aaio_api_key, shopid=aaio_id_shop, secretkey=aaio_secret_key_1)
+
+# ЮMoney
+yoomoney_token = read_config['settings']['yoomoney_token'].strip().replace(" ", "") # юмани токен
+yoomoney_number = read_config['settings']['yoomoney_number'].strip().replace(" ", "") # юмани номер

@@ -107,7 +107,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     
 #Работа с группами
 @dp.callback_query_handler(IsAdmin(), text="resources", state="*")
-async def func_group(call: CallbackQuery, state: FSMContext):
+async def func_back_to_res(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     lang = await get_language(call.from_user.id)
@@ -130,7 +130,7 @@ async def func_group_name(message: Message, state: FSMContext):
     await NewGroup.price.set()
     
 @dp.message_handler(state=NewGroup.price)
-async def func_group_name(message: Message, state: FSMContext):
+async def func_new_name(message: Message, state: FSMContext):
     lang = await get_language(message.from_user.id)
     if is_number(message.text):
         await state.update_data(price=message.text)
@@ -142,14 +142,14 @@ async def func_group_name(message: Message, state: FSMContext):
         await NewGroup.price.set()
 
 @dp.message_handler(state=NewGroup.descr)
-async def func_group_name(message: Message, state: FSMContext):
+async def func_group_desc(message: Message, state: FSMContext):
     await state.update_data(descr=message.text)
     lang = await get_language(message.from_user.id)
     await message.answer(lang.adm_group_content, reply_markup=back_to_adm(texts=lang))
     await NewGroup.content.set()
 
 @dp.message_handler(state=NewGroup.content)
-async def func_group_name(message: Message, state: FSMContext):
+async def func_new_desc(message: Message, state: FSMContext):
     await state.update_data(content=message.text)
     data = await state.get_data()
     values = data['content'].split('\n')
@@ -173,7 +173,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     
 #Удаление группы
 @dp.callback_query_handler(text_startswith="edit_del_grp", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_del_group(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
@@ -183,7 +183,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
 
 #Изменение цены группы
 @dp.callback_query_handler(text_startswith="edit_price_grp", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_edit_price(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
@@ -193,7 +193,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.update_data(id=group_id)
     
 @dp.message_handler(state=EditGroup.price)
-async def func_newsletter_text(message: Message, state: FSMContext):
+async def func_edit_price_text(message: Message, state: FSMContext):
     await state.update_data(price=message.text)
     lang = await get_language(message.from_user.id)
     if is_number(message.text):
@@ -208,7 +208,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     
 #Изменение название группы
 @dp.callback_query_handler(text_startswith="edit_name_grp", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_edit_name(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
@@ -218,7 +218,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.update_data(id=group_id)
     
 @dp.message_handler(state=EditGroup.name)
-async def func_newsletter_text(message: Message, state: FSMContext):
+async def func_edit_price_text(message: Message, state: FSMContext):
     await state.update_data(name=message.text)
     data = await state.get_data()
     lang = await get_language(message.from_user.id)
@@ -228,7 +228,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     
 #Изменение Контента группы
 @dp.callback_query_handler(text_startswith="edit_cont_grp", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_edit_cont(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
@@ -238,7 +238,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.update_data(id=group_id)
     
 @dp.message_handler(state=EditGroup.content)
-async def func_newsletter_text(message: Message, state: FSMContext):
+async def func_edit_cont_text(message: Message, state: FSMContext):
     await state.update_data(content=message.text)
     data = await state.get_data()
     values = data['content'].split('\n')
@@ -252,7 +252,7 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     
 #Изменение Описания группы
 @dp.callback_query_handler(text_startswith="edit_descr_grp", state="*")
-async def func_one_group_info(call: CallbackQuery, state: FSMContext):
+async def func_edit_desc(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     lang = await get_language(call.from_user.id)
@@ -262,7 +262,7 @@ async def func_one_group_info(call: CallbackQuery, state: FSMContext):
     await state.update_data(id=group_id)
     
 @dp.message_handler(state=EditGroup.descr)
-async def func_newsletter_text(message: Message, state: FSMContext):
+async def func_edit_text(message: Message, state: FSMContext):
     await state.update_data(descr=message.text)
     data = await state.get_data()
     lang = await get_language(message.from_user.id)
@@ -271,13 +271,13 @@ async def func_newsletter_text(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, lang.success_save, reply_markup=back_to_profile(texts=lang, id=data['id']))
     
 @dp.message_handler(text='back_to_menu', state="*")
-async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+async def func_back_to_menu(call: CallbackQuery, state: FSMContext):
     await state.finish()
     lang = await get_language(call.from_user.id)
     await bot.send_message(call.from_user.id, lang.welcome)
     
 @dp.message_handler(text_startswith='back_to_profile', state="*")
-async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+async def func_adm_m(call: CallbackQuery, state: FSMContext):
     await state.finish()
     group_id = call.data.split(":")[1]
     await call.message.delete()
