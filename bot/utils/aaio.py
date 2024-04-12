@@ -33,7 +33,7 @@ class Aaio:
                 'currency': currency
             }
 
-            response = await session.post(url="https://aaio.io/merchant/pay", data=params)
+            response = await session.post(url="https://aaio.so/merchant/pay", data=params)
 
             await session.close()
 
@@ -46,7 +46,7 @@ class Aaio:
                 'merchant_id': self.shop_id
             }
 
-            response = await session.post(url="https://aaio.io/api/info-pay", data=params)
+            response = await session.post(url="https://aaio.so/api/info-pay", data=params)
             await session.close()
             resp = await response.json()
 
@@ -60,7 +60,7 @@ class Aaio:
 
     async def get_balance(self):
         async with aiohttp.ClientSession(headers=self.headers, timeout=self.timeout) as session:
-            response = await session.get(url="https://aaio.io/api/balance")
+            response = await session.get(url="https://aaio.so/api/balance")
             await session.close()
 
             resp = await response.json()
