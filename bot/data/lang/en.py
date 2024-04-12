@@ -38,7 +38,7 @@ class Texts:
      adm_group_content = "🌟 Specify the content for the group: <b>group ID separated by a new line\nFor example:\n-543534543\n-5345234\n-85435634</b>"
      adm_group_no_price = "You must specify a number"
      success_save = "Successfully saved"
-     choose_bank = "🔥 Select payment method"
+     choose_bank = "🔥 Select a Payment Method:"
      group_msg = """
      🆔 Id: <b>{id}</b>
      📝 Name: <b>{name}</b>
