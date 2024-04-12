@@ -17,7 +17,6 @@ async def on_startup(dp: Dispatcher):
     setup_middlewares(dp)
     print(colorama.Fore.RED + "=======================")
     print(colorama.Fore.GREEN + "Бот успешно запущен")
-    print(colorama.Fore.LIGHTBLUE_EX + "Разработчик: https://t.me/lll10010010")
     print(colorama.Fore.RESET)
  
 # Выполнение функции после выключения бота
