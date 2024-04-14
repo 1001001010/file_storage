@@ -122,7 +122,7 @@ def bank_inl(group_id, texts):
    kb = []
 
    kb.append(InlineKeyboardButton("💳 Карта (РФ, УК, КЗ)", callback_data=f"aaio:{group_id}"))
-   kb.append(InlineKeyboardButton("📌 ЮMoney", callback_data=f"yoo:{group_id}"))
+   # kb.append(InlineKeyboardButton("📌 ЮMoney", callback_data=f"yoo:{group_id}"))
    kb.append(InlineKeyboardButton("💎 CryptoBot", callback_data=f"Crypto_bot:{group_id}"))
 
    keyboard.add(kb[0])
