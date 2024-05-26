@@ -11,6 +11,7 @@ from bot.data import config
 from AsyncPayments.cryptoBot import AsyncCryptoBot
 from bot.utils.utils_functions import send_admins, format_rate
 from datetime import datetime, timedelta
+from bot.utils.lava import Lava
 import ast
 import random
 from bot.utils.aaio import Aaio
@@ -23,6 +24,7 @@ try:
         aaio_secret_key=config.aaio_secret_key_1
     )
     yoo = YooMoney(token=config.yoomoney_token, number=config.yoomoney_number)
+    lava = Lava(shop_id=config.lava_project_id, secret_token=config.lava_secret_key)
 except:
     pass
 
@@ -185,4 +187,46 @@ async def func_check_opl(call: CallbackQuery, state: FSMContext):
         await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
         await call.message.delete()
     elif order_info == False:
+        await call.answer(lang.ne_oplat)
+        
+@dp.callback_query_handler(text_startswith="Lava", state="*")
+async def func_vibor_plat(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    await call.message.delete()
+    group_id = call.data.split(":")[1]
+    group_info = await db.get_group(id=group_id)
+    bota = await bot.get_me()
+    bot_name = bota.username
+    invoice = await lava.create_invoice(amount=float(group_info['price']),
+                                                comment=f"Покупка товара {group_info['name']} на сумму {group_info['price']}RUB в боте {bot_name}",
+                                                success_url=f"https://t.me/{bot_name}")
+    link = invoice['data']['url']
+    id = invoice['data']['id']
+    lang = await get_language(call.from_user.id)
+    await bot.send_message(call.from_user.id, lang.refill_gen_text(way="lava", amount=group_info['price'], curr='RUB'), reply_markup=refill_open_inl_aaio(texts=lang, link=link, group_id=group_id, pay_id=id))
+    
+@dp.callback_query_handler(text_startswith="check_lava_opl", state="*")
+async def func_check_opl(call: CallbackQuery, state: FSMContext):
+    await state.finish()
+    lang = await get_language(call.from_user.id)
+    lava_id = call.data.split(":")[1]
+    tovar_id = call.data.split(":")[2]
+    status = await lava.status_invoice(invoice_id=lava_id)
+    if status == True:
+        group_info = await db.get_group(id=tovar_id)
+        arr = ast.literal_eval(group_info['content'])
+        msg = """"""
+        for i in arr:
+            chat_id = i
+            expire_date = datetime.now() + timedelta(days=1)
+            link = await bot.create_chat_invite_link(chat_id, expire_date.timestamp, 1)
+            msg += f"{link.invite_link}\n"
+        await bot.send_message(call.from_user.id, lang.tovar(name=group_info['name'], desc=msg))
+        name = call.from_user.username
+        if call.from_user.username == "":
+            us = await bot.get_chat(call.from_user.id)
+            name = us.get_mention(as_html=True)
+        await send_admins(f"💎 Пользователь @{name} приобрел товар {group_info['name']}")
+        await call.message.delete()
+    elif status == False:
         await call.answer(lang.ne_oplat)

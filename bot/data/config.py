@@ -41,3 +41,7 @@ aaio_client = AsyncAaio(apikey=aaio_api_key, shopid=aaio_id_shop, secretkey=aaio
 # ЮMoney
 yoomoney_token = read_config['settings']['yoomoney_token'].strip().replace(" ", "") # юмани токен
 yoomoney_number = read_config['settings']['yoomoney_number'].strip().replace(" ", "") # юмани номер
+
+# Lava
+lava_secret_key = read_config['settings']['lava_secret_key'].strip().replace(" ", "") # лава секретный ключ
+lava_project_id = read_config['settings']['lava_project_id'].strip().replace(" ", "") # лава ID проекта
